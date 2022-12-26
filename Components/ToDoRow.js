@@ -1,5 +1,3 @@
-import { withStyles } from '@mui/material';
-import { style } from '@mui/system';
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 
