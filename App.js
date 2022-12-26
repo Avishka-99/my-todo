@@ -6,6 +6,7 @@ import ToDoRow from './Components/ToDoRow';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Swipeable } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
+
 export default function App() {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date(Date.now()));
@@ -214,18 +215,17 @@ export default function App() {
       </View>
       <View style={styles.upcomming}><TouchableOpacity onPress={clearAll}><Text style={styles.upcommingTitle}>Upcomming</Text></TouchableOpacity><TouchableNativeFeedback onPress={() => console.log(data[0][3].indexOf(':'))}><Text style={styles.upcommingTitle}>NEW</Text></TouchableNativeFeedback></View>
       <View style={styles.todo_list}>
-        <Swipeable>
-          <FlatList
-            data={data}
-            keyExtractor={item => item[0]}
-            renderItem={({ item }) => (
-              <ToDoRow key={item[0]} icon={item[4] == "night" ? <FontAwesome name="moon-o" size={50} color="white" /> : <Ionicons name="md-sunny-outline" size={50} color="white" />} content={item[1]} time={item[3]} date={item[2]} />
 
-            )}
+        <FlatList
+          data={data}
+          keyExtractor={item => item[0]}
+          renderItem={({ item }) => (
+            <ToDoRow key={item[0]} icon={item[4] == "night" ? <FontAwesome name="moon-o" size={50} color="white" /> : <Ionicons name="md-sunny-outline" size={50} color="white" />} content={item[1]} time={item[3]} date={item[2]} />
+          )}
 
 
-          />
-        </Swipeable>
+        />
+
       </View>
 
     </SafeAreaView>

@@ -1,21 +1,30 @@
 import React, { Component } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
+import { Swipeable } from 'react-native-gesture-handler';
 
 function ToDoRow(props) {
     return (
-        <View style={styles.row}>
-            <View style={styles.left}>{props.icon}</View>
-            <View style={styles.right}>
-                <View style={styles.content}><Text style={styles.text} numberOfLines={3}>{props.content}</Text></View>
-                <View style={styles.date_time}>
-                    <View style={styles.date}><Text style={styles.d_t}>{props.date}</Text></View>
-                    <View style={styles.time}><Text style={styles.d_t}>{props.time}</Text></View>
+        <Swipeable renderRightActions={() => <View style={styles.view}></View>} activeOffsetX={[-30, 30]} >
+            <View style={styles.row}>
+                <View style={styles.left}>{props.icon}</View>
+                <View style={styles.right}>
+                    <View style={styles.content}><Text style={styles.text} numberOfLines={3}>{props.content}</Text></View>
+                    <View style={styles.date_time}>
+                        <View style={styles.date}><Text style={styles.d_t}>{props.date}</Text></View>
+                        <View style={styles.time}><Text style={styles.d_t}>{props.time}</Text></View>
+                    </View>
                 </View>
             </View>
-        </View>
+        </Swipeable>
     );
 }
 const styles = StyleSheet.create({
+    view: {
+        margin: 6,
+        width: "30%",
+        backgroundColor: "tomato",
+        borderRadius: 6,
+    },
     row: {
         flex: 1,
         height: 100,
