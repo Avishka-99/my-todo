@@ -1,0 +1,30 @@
+{
+  "main": "node_modules/expo/AppEntry.js",
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "eject": "expo eject"
+  },
+  "dependencies": {
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
+    "@fontsource/roboto": "^4.5.8",
+    "@mui/material": "^5.11.1",
+    "@react-native-community/datetimepicker": "^6.7.1",
+    "expo": "^47.0.0",
+    "expo-status-bar": "~1.4.2",
+    "react": "18.1.0",
+    "react-dom": "18.1.0",
+    "react-native": "0.70.5",
+    "react-native-web": "~0.18.7",
+    "unimodules-permissions-interface": "^6.1.0",
+    "@react-native-async-storage/async-storage": "~1.17.3",
+    "react-native-gesture-handler": "~2.8.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.19.3"
+  },
+  "private": true
+}
