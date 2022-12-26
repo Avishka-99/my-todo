@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, FlatList, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, FlatList, TouchableNativeFeedback } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialCommunityIcons, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import ToDoRow from './Components/ToDoRow';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Swipeable } from 'react-native-gesture-handler';
+import * as Haptics from 'expo-haptics';
 export default function App() {
   const [date, setDate] = useState(new Date());
   const [time, setTime] = useState(new Date(Date.now()));
@@ -25,7 +27,7 @@ export default function App() {
           var time_ = todoarr_.time;
           var hour = parseInt(time_.substr(0, time_.indexOf(':')));
           console.log(hour);
-          if ((time_[time_.length - 2] == "P" && 11 >= hour && hour>5) || (time_[time_.length - 2] == "A" && ((12 == hour) || hour <= 5))) {
+          if ((time_[time_.length - 2] == "P" && (11 >= hour && hour > 5)) || (time_[time_.length - 2] == "A" && ((12 == hour) || hour <= 5))) {
             dat.push([id_, content_, date_, time_, "night"]);
           } else {
             dat.push([id_, content_, date_, time_, "day"]);
@@ -43,12 +45,12 @@ export default function App() {
   const onChangeDate = (event, selectedDate) => {
     const currentDate = selectedDate;
     setDate(currentDate);
-    console.log(date.toDateString());
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
   };
   const onChangeTime = (event, selectedTime) => {
     const currentTime = selectedTime;
     setTime(currentTime);
-    console.log(time.toLocaleTimeString('en-US'));
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
   };
   const saveDetails = async () => {
     let id_arr;
@@ -99,7 +101,7 @@ export default function App() {
         var time_ = todoarr_.time;
         var hour = parseInt(time_.substr(0, time_.indexOf(':')));
         console.log(hour);
-        if ((time_[time_.length - 2] == "P" && 11 >= hour > 5) || (time_[time_.length - 2] == "A" && ((12 == hour) || hour <= 5))) {
+        if ((time_[time_.length - 2] == "P" && (11 >= hour && hour > 5)) || (time_[time_.length - 2] == "A" && ((12 == hour) || hour <= 5))) {
           dat.push([id_, content_, date_, time_, "night"]);
         } else {
           dat.push([id_, content_, date_, time_, "day"]);
@@ -118,6 +120,7 @@ export default function App() {
     } catch (error) {
       console.error(error)
     }*/
+    Haptics.selectionAsync();
   };
   const clearAll = async () => {
     try {
@@ -162,11 +165,11 @@ export default function App() {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.topbar}>
-        <Text style={styles.title_text}>To Do<MaterialIcons name="pending-actions" size={53} color="white"  /></Text>
+        <Text style={styles.title_text}>To Do<MaterialIcons name="pending-actions" size={53} color="white" /></Text>
       </View>
       <View style={styles.todo_input}>
         <View style={styles.content_input}>
-          <TextInput placeholder='Description' style={styles.textfield} onChangeText={text => setContent(text)} />
+          <TextInput placeholder='Description' style={styles.textfield} onChangeText={text => { setContent(text); Haptics.selectionAsync() }} value={content} />
         </View>
         <View style={styles.datetime_input}>
           <View style={styles.date_input}>
@@ -209,18 +212,20 @@ export default function App() {
           </View>
         </View>
       </View>
-      <View style={styles.upcomming}><TouchableOpacity onPress={clearAll}><Text style={styles.upcommingTitle}>Upcomming</Text></TouchableOpacity><TouchableOpacity onPress={() => console.log(data[0][3].indexOf(':'))}><Text style={styles.upcommingTitle}>NEW</Text></TouchableOpacity></View>
+      <View style={styles.upcomming}><TouchableOpacity onPress={clearAll}><Text style={styles.upcommingTitle}>Upcomming</Text></TouchableOpacity><TouchableNativeFeedback onPress={() => console.log(data[0][3].indexOf(':'))}><Text style={styles.upcommingTitle}>NEW</Text></TouchableNativeFeedback></View>
       <View style={styles.todo_list}>
-        <FlatList
-          data={data}
-          keyExtractor={item => item[0]}
-          renderItem={({ item }) => (
-            <ToDoRow key={item[0]} icon={item[4] == "night" ? <FontAwesome name="moon-o" size={50} color="white" /> : <Ionicons name="md-sunny-outline" size={50} color="white" />} content={item[1]} time={item[3]} date={item[2]} />
+        <Swipeable>
+          <FlatList
+            data={data}
+            keyExtractor={item => item[0]}
+            renderItem={({ item }) => (
+              <ToDoRow key={item[0]} icon={item[4] == "night" ? <FontAwesome name="moon-o" size={50} color="white" /> : <Ionicons name="md-sunny-outline" size={50} color="white" />} content={item[1]} time={item[3]} date={item[2]} />
 
-          )}
+            )}
 
 
-        />
+          />
+        </Swipeable>
       </View>
 
     </SafeAreaView>
@@ -245,7 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#371B58",
   },
   topbar: {
-    justifyContent:"center",
+    justifyContent: "center",
     alignContent: 'center',
     alignItems: "flex-start",
 
