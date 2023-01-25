@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, FlatList, TouchableNativeFeedback } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, TextInput, SafeAreaView, TouchableNativeFeedback } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { MaterialCommunityIcons, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 import ToDoRow from './Components/ToDoRow';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { Swipeable } from 'react-native-gesture-handler';
 import * as Haptics from 'expo-haptics';
+import { FlashList } from '@shopify/flash-list';
 
 export default function App() {
   const [date, setDate] = useState(new Date());
@@ -27,7 +27,6 @@ export default function App() {
           var date_ = todoarr_.date;
           var time_ = todoarr_.time;
           var hour = parseInt(time_.substr(0, time_.indexOf(':')));
-          console.log(hour);
           if ((time_[time_.length - 2] == "P" && (11 >= hour && hour > 5)) || (time_[time_.length - 2] == "A" && ((12 == hour) || hour <= 5))) {
             dat.push([id_, content_, date_, time_, "night"]);
           } else {
@@ -37,7 +36,6 @@ export default function App() {
 
       })
       setData(dat);
-      console.log(dat);
     }
     getAll();
   }, []);
@@ -58,24 +56,21 @@ export default function App() {
     var id;
     try {
       id_arr = await AsyncStorage.getItem('id_arr');
+      console.log(id_arr);
       if (id_arr !== null) {
         var arr = JSON.parse(id_arr);
         var next_id = parseInt(arr[arr.length - 1]) + 1; //number
-        //console.log(arr);
         id = next_id;
         arr.push(next_id.toString());
         const jsonValue = JSON.stringify(arr)
-        await AsyncStorage.setItem('id_arr', jsonValue);
-        //console.log(typeof (parseInt(arr[-1])));
+        await AsyncStorage.setItem('id_arr', jsonValue);;
       } else {
         id_arr = ["1"];
         id = 1;
-        console.log(typeof (id_arr))
         const jsonValue = JSON.stringify(id_arr)
         await AsyncStorage.setItem('id_arr', jsonValue);
       }
     } catch (e) {
-      console.log(e);
 
     }
 
@@ -131,37 +126,28 @@ export default function App() {
       // clear error
     }
     setData([]);
-
-    console.log('Done.')
   };
   const saveToState = async () => {
     const keys = await AsyncStorage.getAllKeys();
     const result = await AsyncStorage.multiGet(keys);
     setArrToDo(result);
-    setArrToDo(result);
-    console.log(arrTodo);
 
-
-  }
-
-
-  /*result.map((item) => {
-    if (item[0] !== "id_arr") {
-      var id_ = item[0];
-      var todoarr_ = JSON.parse((item[1].replace('/', '')))
-      var content_ = todoarr_.content;
-      var date_ = todoarr_.date;
-      var time_ = todoarr_.time;
-      console.log(date_);
-
+  };
+  const removeItem = async (key) => {
+    try {
+      await AsyncStorage.removeItem(key.toString())
+    } catch (e) {
+      // remove error
     }
 
-  });*/
-  //console.log((JSON.parse((result[0][1].replace('/', '')))));
-  //console.log(keys.shift());
-  //const value = await AsyncStorage.getItem('id_arr')
-  //console.log(typeof (JSON.parse(keys)));
-
+  }
+  const deleteToDo = (toDo) => {
+    console.log(toDo[0]);
+    var tempData = data.filter(item => item != toDo);
+    removeItem(toDo[0]);
+    setData(tempData);
+    //return [...data]
+  };
   const d = [{ id: 1, name: 't' }, { id: 2, name: 's' }, { id: 3, name: 'yh' }, { id: 4, name: 'yh' }, { id: 5, name: 'yh' }, { id: 6, name: 'yh' }, { id: 7, name: 'yh' }, { id: 8, name: 'yh' }]
   return (
     <SafeAreaView style={styles.container}>
@@ -208,26 +194,22 @@ export default function App() {
               <TouchableOpacity onPress={saveDetails}>
                 <MaterialCommunityIcons name='check-circle-outline' size={40} color="dodgerblue" />
               </TouchableOpacity>
-
             </View>
           </View>
         </View>
       </View>
-      <View style={styles.upcomming}><TouchableOpacity onPress={clearAll}><Text style={styles.upcommingTitle}>Upcomming</Text></TouchableOpacity><TouchableNativeFeedback onPress={() => console.log(data[0][3].indexOf(':'))}><Text style={styles.upcommingTitle}>NEW</Text></TouchableNativeFeedback></View>
+      <View style={styles.upcomming}><TouchableOpacity onPress={clearAll}><Text style={styles.upcommingTitle}>Upcomming</Text></TouchableOpacity><TouchableNativeFeedback onPress={() => console.log(data.length)}><Text style={styles.upcommingTitle}>NEW</Text></TouchableNativeFeedback></View>
       <View style={styles.todo_list}>
-
-        <FlatList
+        <FlashList
+          extraData={data}
           data={data}
           keyExtractor={item => item[0]}
+          estimatedItemSize={data.length}
           renderItem={({ item }) => (
-            <ToDoRow key={item[0]} icon={item[4] == "night" ? <FontAwesome name="moon-o" size={50} color="white" /> : <Ionicons name="md-sunny-outline" size={50} color="white" />} content={item[1]} time={item[3]} date={item[2]} />
+            <ToDoRow id={item} fun={deleteToDo} key={item} icon={item[4] == "night" ? <FontAwesome name="moon-o" size={50} color="white" /> : <Ionicons name="md-sunny-outline" size={50} color="white" />} content={item[1]} time={item[3]} date={item[2]} />
           )}
-
-
         />
-
       </View>
-
     </SafeAreaView>
   );
 }

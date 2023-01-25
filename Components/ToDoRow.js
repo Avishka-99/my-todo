@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
-
+import { MaterialCommunityIcons, FontAwesome, Ionicons, MaterialIcons } from '@expo/vector-icons';
 function ToDoRow(props) {
     return (
-        <Swipeable renderRightActions={() => <View style={styles.view}></View>} activeOffsetX={[-30, 30]} >
+        <Swipeable renderRightActions={() => <View style={styles.view}><TouchableOpacity onPress={() => props.fun(props.id)}><MaterialCommunityIcons name='delete-outline' size={50} color="white" /></TouchableOpacity></View>} activeOffsetX={[-30, 30]} >
             <View style={styles.row}>
                 <View style={styles.left}>{props.icon}</View>
                 <View style={styles.right}>
@@ -21,9 +21,11 @@ function ToDoRow(props) {
 const styles = StyleSheet.create({
     view: {
         margin: 6,
-        width: "30%",
+        width: "25%",
         backgroundColor: "tomato",
         borderRadius: 6,
+        alignItems: "center",
+        justifyContent: "center",
     },
     row: {
         flex: 1,
